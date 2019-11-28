@@ -1,35 +1,35 @@
-// A Backtracking program in C++ to solve Sudoku problem 
+// A Backtracking program in C++ to solve Sudoku problem
 // This is code was originally contributed by rathbhupendra
 // Modernized by Arne Mertz
+#include <array>
 #include <cassert>
 #include <iostream>
 
 // UNASSIGNED is used for empty cells in Sudoku grid
-constexpr auto UNASSIGNED=0;
+constexpr auto UNASSIGNED = 0;
+constexpr auto GRID_SIZE = 9;
 
-// N is used for the size of Sudoku grid. 
-// Size will be NxN 
-constexpr auto N=9;
+using Grid = std::array<std::array<int, GRID_SIZE>, GRID_SIZE>;
 
 // This function finds an entry in grid 
 // that is still unassigned 
-bool FindUnassignedLocation(int grid[N][N],
+bool FindUnassignedLocation(Grid const& grid,
                             int& row, int& col);
 
 // Checks whether it will be legal 
 // to assign num to the given row, col 
-bool isSafe(int grid[N][N], int row,
+bool isSafe(Grid const& grid, int row,
             int col, int num);
 
 // Pinning test
-void assertCorrectSolution(const int grid[N][N]);
+void assertCorrectSolution(Grid const& grid);
 
 /* Takes a partially filled-in grid and attempts
 to assign values to all unassigned locations in 
 such a way to meet the requirements for 
 Sudoku solution (non-duplication across rows, 
 columns, and boxes) */
-bool SolveSudoku(int grid[N][N])
+bool SolveSudoku(Grid& grid)
 {
     int row, col;
 
@@ -67,12 +67,12 @@ still unassigned. If found, the reference
 parameters row, col will be set the location 
 that is unassigned, and true is returned. 
 If no unassigned entries remain, false is returned. */
-bool FindUnassignedLocation(int grid[N][N],
+bool FindUnassignedLocation(Grid const& grid,
                             int& row, int& col)
 {
-    for (row = 0; row < N; row++)
+    for (row = 0; row < GRID_SIZE; row++)
     {
-        for (col = 0; col < N; col++)
+        for (col = 0; col < GRID_SIZE; col++)
         {
             if (grid[row][col] == UNASSIGNED)
             {
@@ -86,9 +86,9 @@ bool FindUnassignedLocation(int grid[N][N],
 /* Returns a boolean which indicates whether 
 an assigned entry in the specified row matches 
 the given number. */
-bool UsedInRow(int grid[N][N], int row, int num)
+bool UsedInRow(Grid const& grid, int row, int num)
 {
-    for (int col = 0; col < N; col++)
+    for (int col = 0; col < GRID_SIZE; col++)
     {
         if (grid[row][col] == num)
         {
@@ -101,9 +101,9 @@ bool UsedInRow(int grid[N][N], int row, int num)
 /* Returns a boolean which indicates whether 
 an assigned entry in the specified column 
 matches the given number. */
-bool UsedInCol(int grid[N][N], int col, int num)
+bool UsedInCol(Grid const& grid, int col, int num)
 {
-    for (int row = 0; row < N; row++)
+    for (int row = 0; row < GRID_SIZE; row++)
     {
         if (grid[row][col] == num)
         {
@@ -116,7 +116,7 @@ bool UsedInCol(int grid[N][N], int col, int num)
 /* Returns a boolean which indicates whether 
 an assigned entry within the specified 3x3 box 
 matches the given number. */
-bool UsedInBox(int grid[N][N], int boxStartRow,
+bool UsedInBox(Grid const& grid, int boxStartRow,
                int boxStartCol, int num)
 {
     for (int row = 0; row < 3; row++)
@@ -136,7 +136,7 @@ bool UsedInBox(int grid[N][N], int boxStartRow,
 /* Returns a boolean which indicates whether 
 it will be legal to assign num to the given 
 row, col location. */
-bool isSafe(int grid[N][N], int row,
+bool isSafe(Grid const& grid, int row,
             int col, int num)
 {
     /* Check if 'num' is not already placed in
@@ -149,11 +149,11 @@ bool isSafe(int grid[N][N], int row,
 }
 
 /* A utility function to print grid */
-void printGrid(int grid[N][N])
+void printGrid(Grid const& grid)
 {
-    for (int row = 0; row < N; row++)
+    for (int row = 0; row < GRID_SIZE; row++)
     {
-        for (int col = 0; col < N; col++)
+        for (int col = 0; col < GRID_SIZE; col++)
         {
             std::cout << grid[row][col] << " ";
         }
@@ -165,15 +165,15 @@ void printGrid(int grid[N][N])
 int main()
 {
     // 0 means unassigned cells
-    int grid[N][N] = {{3, 0, 6, 5, 0, 8, 4, 0, 0},
-                      {5, 2, 0, 0, 0, 0, 0, 0, 0},
-                      {0, 8, 7, 0, 0, 0, 0, 3, 1},
-                      {0, 0, 3, 0, 1, 0, 0, 8, 0},
-                      {9, 0, 0, 8, 6, 3, 0, 0, 5},
-                      {0, 5, 0, 0, 9, 0, 6, 0, 0},
-                      {1, 3, 0, 0, 0, 0, 2, 5, 0},
-                      {0, 0, 0, 0, 0, 0, 0, 7, 4},
-                      {0, 0, 5, 2, 0, 6, 3, 0, 0}};
+    Grid grid{{{3, 0, 6, 5, 0, 8, 4, 0, 0},
+                  {5, 2, 0, 0, 0, 0, 0, 0, 0},
+                  {0, 8, 7, 0, 0, 0, 0, 3, 1},
+                  {0, 0, 3, 0, 1, 0, 0, 8, 0},
+                  {9, 0, 0, 8, 6, 3, 0, 0, 5},
+                  {0, 5, 0, 0, 9, 0, 6, 0, 0},
+                  {1, 3, 0, 0, 0, 0, 2, 5, 0},
+                  {0, 0, 0, 0, 0, 0, 0, 7, 4},
+                  {0, 0, 5, 2, 0, 6, 3, 0, 0}}};
     auto successfullySolved = SolveSudoku(grid);
     assert(successfullySolved);
 
@@ -190,24 +190,17 @@ int main()
     return 0;
 }
 
-void assertCorrectSolution(const int grid[N][N])
+void assertCorrectSolution(Grid const& grid)
 {
-    const int expected[N][N] =
-        {{3, 1, 6, 5, 7, 8, 4, 9, 2},
-         {5, 2, 9, 1, 3, 4, 7, 6, 8},
-         {4, 8, 7, 6, 2, 9, 5, 3, 1},
-         {2, 6, 3, 4, 1, 5, 9, 8, 7},
-         {9, 7, 4, 8, 6, 3, 1, 2, 5},
-         {8, 5, 1, 7, 9, 2, 6, 4, 3},
-         {1, 3, 8, 9, 4, 7, 2, 5, 6},
-         {6, 9, 2, 3, 5, 1, 8, 7, 4},
-         {7, 4, 5, 2, 8, 6, 3, 1, 9}};
+    Grid const expected{{{3, 1, 6, 5, 7, 8, 4, 9, 2},
+                            {5, 2, 9, 1, 3, 4, 7, 6, 8},
+                            {4, 8, 7, 6, 2, 9, 5, 3, 1},
+                            {2, 6, 3, 4, 1, 5, 9, 8, 7},
+                            {9, 7, 4, 8, 6, 3, 1, 2, 5},
+                            {8, 5, 1, 7, 9, 2, 6, 4, 3},
+                            {1, 3, 8, 9, 4, 7, 2, 5, 6},
+                            {6, 9, 2, 3, 5, 1, 8, 7, 4},
+                            {7, 4, 5, 2, 8, 6, 3, 1, 9}}};
 
-    for (int row = 0; row < N; row++)
-    {
-        for (int col = 0; col < N; col++)
-        {
-            assert (grid[row][col] == expected[row][col]);
-        }
-    }
+    assert (grid == expected);
 }
