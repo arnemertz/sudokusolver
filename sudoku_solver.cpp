@@ -1,16 +1,15 @@
 // A Backtracking program in C++ to solve Sudoku problem 
 // This is code was originally contributed by rathbhupendra
 // Modernized by Arne Mertz
-#include <bits/stdc++.h>
-
-using namespace std;
+#include <cassert>
+#include <iostream>
 
 // UNASSIGNED is used for empty cells in Sudoku grid
-#define UNASSIGNED 0
+constexpr auto UNASSIGNED=0;
 
 // N is used for the size of Sudoku grid. 
 // Size will be NxN 
-#define N 9
+constexpr auto N=9;
 
 // This function finds an entry in grid 
 // that is still unassigned 
@@ -156,9 +155,9 @@ void printGrid(int grid[N][N])
     {
         for (int col = 0; col < N; col++)
         {
-            cout << grid[row][col] << " ";
+            std::cout << grid[row][col] << " ";
         }
-        cout << endl;
+        std::cout << std::endl;
     }
 }
 
@@ -185,7 +184,7 @@ int main()
     }
     else
     {
-        cout << "No solution exists";
+        std::cout << "No solution exists";
     }
 
     return 0;
