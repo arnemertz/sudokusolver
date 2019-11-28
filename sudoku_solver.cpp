@@ -1,4 +1,6 @@
 // A Backtracking program in C++ to solve Sudoku problem 
+// This is code was originally contributed by rathbhupendra
+// Modernized by Arne Mertz
 #include <bits/stdc++.h>
 
 using namespace std;
@@ -20,7 +22,10 @@ bool FindUnassignedLocation(int grid[N][N],
 bool isSafe(int grid[N][N], int row,
             int col, int num);
 
-/* Takes a partially filled-in grid and attempts 
+// Pinning test
+void assertCorrectSolution(const int grid[N][N]);
+
+/* Takes a partially filled-in grid and attempts
 to assign values to all unassigned locations in 
 such a way to meet the requirements for 
 Sudoku solution (non-duplication across rows, 
@@ -47,7 +52,9 @@ bool SolveSudoku(int grid[N][N])
 
             // return, if success, yay!
             if (SolveSudoku(grid))
+            {
                 return true;
+            }
 
             // failure, unmake & try again
             grid[row][col] = UNASSIGNED;
@@ -168,8 +175,12 @@ int main()
                       {1, 3, 0, 0, 0, 0, 2, 5, 0},
                       {0, 0, 0, 0, 0, 0, 0, 7, 4},
                       {0, 0, 5, 2, 0, 6, 3, 0, 0}};
-    if (SolveSudoku(grid) == true)
+    auto successfullySolved = SolveSudoku(grid);
+    assert(successfullySolved);
+
+    if (successfullySolved)
     {
+        assertCorrectSolution(grid);
         printGrid(grid);
     }
     else
@@ -180,4 +191,24 @@ int main()
     return 0;
 }
 
-// This is code is contributed by rathbhupendra 
+void assertCorrectSolution(const int grid[N][N])
+{
+    const int expected[N][N] =
+        {{3, 1, 6, 5, 7, 8, 4, 9, 2},
+         {5, 2, 9, 1, 3, 4, 7, 6, 8},
+         {4, 8, 7, 6, 2, 9, 5, 3, 1},
+         {2, 6, 3, 4, 1, 5, 9, 8, 7},
+         {9, 7, 4, 8, 6, 3, 1, 2, 5},
+         {8, 5, 1, 7, 9, 2, 6, 4, 3},
+         {1, 3, 8, 9, 4, 7, 2, 5, 6},
+         {6, 9, 2, 3, 5, 1, 8, 7, 4},
+         {7, 4, 5, 2, 8, 6, 3, 1, 9}};
+
+    for (int row = 0; row < N; row++)
+    {
+        for (int col = 0; col < N; col++)
+        {
+            assert (grid[row][col] == expected[row][col]);
+        }
+    }
+}
