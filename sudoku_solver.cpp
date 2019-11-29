@@ -4,17 +4,20 @@
 #include <array>
 #include <cassert>
 #include <iostream>
+#include <vector>
 
 // UNASSIGNED is used for empty cells in Sudoku grid
 constexpr auto UNASSIGNED = 0;
-constexpr auto GRID_SIZE = 9;
+constexpr std::size_t GRID_SIZE = 9ul;
 
 using Grid = std::array<std::array<int, GRID_SIZE>, GRID_SIZE>;
 
-// This function finds an entry in grid 
-// that is still unassigned 
-bool FindUnassignedLocation(Grid const& grid,
-                            int& row, int& col);
+struct Location {
+    std::size_t row;
+    std::size_t col;
+};
+
+std::vector<Location> FindUnassignedLocations(Grid const& grid);
 
 // Checks whether it will be legal 
 // to assign num to the given row, col 
@@ -29,16 +32,14 @@ to assign values to all unassigned locations in
 such a way to meet the requirements for 
 Sudoku solution (non-duplication across rows, 
 columns, and boxes) */
-bool SolveSudoku(Grid& grid)
+bool SolveSudoku(Grid& grid, std::vector<Location> const& unassignedLocations)
 {
-    int row, col;
-
-    // If there is no unassigned location,
-    // we are done
-    if (!FindUnassignedLocation(grid, row, col))
+    if (unassignedLocations.empty())
     {
         return true;
     } // success!
+
+    auto [row, col] = unassignedLocations.front();
 
     // consider digits 1 to 9
     for (int num = 1; num <= 9; num++)
@@ -50,7 +51,7 @@ bool SolveSudoku(Grid& grid)
             grid[row][col] = num;
 
             // return, if success, yay!
-            if (SolveSudoku(grid))
+            if (SolveSudoku(grid, {unassignedLocations.begin()+1, unassignedLocations.end()}))
             {
                 return true;
             }
@@ -62,26 +63,25 @@ bool SolveSudoku(Grid& grid)
     return false; // this triggers backtracking
 }
 
-/* Searches the grid to find an entry that is 
-still unassigned. If found, the reference 
-parameters row, col will be set the location 
-that is unassigned, and true is returned. 
-If no unassigned entries remain, false is returned. */
-bool FindUnassignedLocation(Grid const& grid,
-                            int& row, int& col)
+std::vector<Location> FindUnassignedLocations(Grid const& grid)
 {
-    for (row = 0; row < GRID_SIZE; row++)
+    std::vector<Location> unassignedLocations{};
+    // space for Location objects is cheap, reserve space for all possible locations
+    unassignedLocations.reserve(GRID_SIZE*GRID_SIZE);
+
+    for (std::size_t row = 0ul; row < GRID_SIZE; ++row)
     {
-        for (col = 0; col < GRID_SIZE; col++)
+        for (std::size_t col = 0ul; col < GRID_SIZE; ++col)
         {
             if (grid[row][col] == UNASSIGNED)
             {
-                return true;
+                unassignedLocations.push_back(Location{row, col});
             }
         }
     }
-    return false;
+    return unassignedLocations;
 }
+
 
 /* Returns a boolean which indicates whether 
 an assigned entry in the specified row matches 
@@ -174,7 +174,9 @@ int main()
                   {1, 3, 0, 0, 0, 0, 2, 5, 0},
                   {0, 0, 0, 0, 0, 0, 0, 7, 4},
                   {0, 0, 5, 2, 0, 6, 3, 0, 0}}};
-    auto successfullySolved = SolveSudoku(grid);
+
+    auto const unassignedLocations = FindUnassignedLocations(grid);
+    auto successfullySolved = SolveSudoku(grid, unassignedLocations);
     assert(successfullySolved);
 
     if (successfullySolved)
